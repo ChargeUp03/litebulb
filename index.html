@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Litebulb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; padding: 15px; background: #fff; }
+        .dark { background: #1a1a1a; color: #eee; }
+        #out { border: 1px solid #ccc; padding: 10px; margin-top: 10px; white-space: pre-wrap; }
+        textarea { width: 95%; font-size: 16px; } /* 16px prevents iOS zoom-in */
+    </style>
+</head>
+<body id="b">
+    <b>Litebulb</b><br>
+    <input type="checkbox" onclick="document.getElementById('b').className=(this.checked?'dark':'')"> Dark Mode
+    <hr>
+    <textarea id="p" rows="4"></textarea><br>
+    <button onclick="ask()">Send</button>
+
+    <div id="out">Ready.</div>
+
+    <script>
+        function ask() {
+            var p = document.getElementById('p').value;
+            var o = document.getElementById('out');
+            o.innerHTML = "Thinking...";
+
+            // The URL of your Google App Script
+            var url = "https://script.google.com/macros/s/AKfycbxt5ng6Nz2dmqrd3ab8oUPL9SKW5f-wjEeA_Tm3Zf4_JLLjrdzqiNHogjknkfIcQMiU/exec";
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    o.innerText = xhr.responseText;
+                }
+            };
+
+            // Old browsers prefer simple stringified objects
+            var data = JSON.stringify({prompt: p});
+            xhr.send(data);
+        }
+    </script>
+</body>
+</html>
