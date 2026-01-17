@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Litebulb Chat</title>
+    <title>Litebulb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="text/plain" href="favicon.ico"> <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <style>
         body { font-family: sans-serif; margin: 0; padding: 0; background: #fff; color: #000; }
         .dark { background: #121212; color: #eee; }
@@ -66,7 +71,7 @@
         window.scrollTo(0, document.body.scrollHeight);
 
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "YOUR_EXEC_URL", true);
+        xhr.open("POST", "https://script.google.com/macros/s/AKfycbyutfg_ejiM08iqAXWkhHE2W43TZq0OMuPVUmaOEB1uPQfJvV5NpHoEFg-oWNNgBi4p/exec", true);
         xhr.setRequestHeader("Content-Type", "text/plain");
 
         xhr.onreadystatechange = function() {
