@@ -3,32 +3,26 @@
 <head>
     <title>Litebulb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="text/plain" href="favicon.ico"> 
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="manifest" href="site.webmanifest">
     <style>
         body { font-family: sans-serif; margin: 0; padding: 0; background: #fff; color: #000; }
         .dark { background: #121212; color: #eee; }
-        
-        /* Header */
         #head { position: fixed; top: 0; width: 100%; background: #eee; border-bottom: 1px solid #ccc; padding: 5px; font-size: 12px; z-index: 10; }
         .dark #head { background: #222; border-color: #444; }
 
-        /* Chat Area */
-        #history { padding: 45px 10px 80px 10px; font-size: 14px; line-height: 1.4; }
-        .msg { margin-bottom: 15px; padding: 8px; border-radius: 5px; }
-        .user { background: #e3f2fd; border-left: 4px solid #2196f3; }
-        .ai { background: #f5f5f5; border-left: 4px solid #4caf50; }
-        .dark .user { background: #1a237e; border-color: #3f51b5; }
-        .dark .ai { background: #1b5e20; border-color: #4caf50; }
+        /* Simplified Chat Area */
+        #history { padding: 45px 10px 80px 10px; font-size: 14px; line-height: 1.5; }
+        .msg { margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .dark .msg { border-color: #333; }
+        .u-lab { font-weight: bold; color: #2196f3; }
+        .a-lab { font-weight: bold; color: #4caf50; }
 
-        /* Bottom Bar */
-        #bottom { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ccc; padding: 10px; z-index: 10; }
+        /* Bottom Bar Fix */
+        #bottom { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ccc; padding: 10px; z-index: 10; white-space: nowrap; }
         .dark #bottom { background: #121212; border-color: #444; }
-        #p { width: 60%; font-size: 16px; }
+        
+        /* Shorter input box to fit button on same line */
+        #p { width: 55%; font-size: 16px; padding: 5px; border: 1px solid #ccc; }
+        button { padding: 5px 10px; font-size: 14px; }
     </style>
 </head>
 <body id="b" class="light">
@@ -39,13 +33,13 @@
 </div>
 
 <div id="history">
-    <div class="msg ai">Welcome to Litebulb. How can I help?</div>
+    <div class="msg"><span class="a-lab">Gemini:</span> Welcome to Litebulb. How can I help?</div>
 </div>
 
 <div id="bottom">
     <input type="file" id="img" accept="image/*" style="display:none" onchange="imgTag()">
     <button onclick="document.getElementById('img').click()">Img</button>
-    <input type="text" id="p" placeholder="Type here...">
+    <input type="text" id="p" placeholder="Type..." onkeypress="if(event.keyCode==13) ask()">
     <button onclick="ask()">Send</button>
     <div id="status" style="font-size:10px; color:gray;"></div>
 </div>
@@ -69,27 +63,23 @@
         var val = p.value;
         if(!val && !currentImg) return;
 
-        // Add user message to screen
-        hist.innerHTML += '<div class="msg user">' + (currentImg ? '<b>[Image Attached]</b><br>' : '') + val + '</div>';
+        // Add user text
+        hist.innerHTML += '<div class="msg"><span class="u-lab">User:</span> ' + (currentImg ? '[Image] ' : '') + val + '</div>';
         p.value = "";
         window.scrollTo(0, document.body.scrollHeight);
 
         var xhr = new XMLHttpRequest();
-        
-        // --- CACHE BUSTER FOR IPOD/IOS 6 ---
-        var scriptUrl = "https://script.google.com/macros/s/AKfycbxkTL3SORfP_n7mjp854Qa90EGqh6eWCvnHCtemb5zPhp-sN1TB7ZSL79bcbhYiZRSZ/exec"; 
+        // PASTE YOUR URL BELOW
+        var scriptUrl = "https://script.google.com/macros/s/AKfycbxHgr4fGMQnen_co1EQDfpe92J4Coe1wTPYiuXYk1I5OGzix-vRMel6aidZZx_pM0JH/exec"; 
         var cacheBuster = "?t=" + new Date().getTime();
         
         xhr.open("POST", scriptUrl + cacheBuster, true);
-
-        // Standard headers
         xhr.setRequestHeader("Content-Type", "text/plain");
-        xhr.setRequestHeader("Cache-Control", "no-cache");
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-                // If it worked, add AI response to chat
-                hist.innerHTML += '<div class="msg ai">' + xhr.responseText + '</div>';
+                var responseText = xhr.responseText || "Error: No response from server.";
+                hist.innerHTML += '<div class="msg"><span class="a-lab">Gemini:</span> ' + responseText + '</div>';
                 document.getElementById('status').innerText = "";
                 currentImg = null;
                 window.scrollTo(0, document.body.scrollHeight);
@@ -97,12 +87,8 @@
         };
 
         document.getElementById('status').innerText = "Thinking...";
-        
-        // Wrap data in JSON string
-        var data = JSON.stringify({prompt: val, image: currentImg});
-        xhr.send(data);
+        xhr.send(JSON.stringify({prompt: val, image: currentImg}));
     }
 </script>
-
 </body>
 </html>
